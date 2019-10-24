@@ -1,0 +1,16 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /paymentSystem
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: cinimex
+    password:  cinimex
+    url: jdbc:postgresql://localhost:5432/payment_system
+  jpa:
+    database: postgresql
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      dialect: org.hibernate.dialect.PostgreSQL95Dialect
