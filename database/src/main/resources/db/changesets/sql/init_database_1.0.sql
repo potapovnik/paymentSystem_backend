@@ -44,6 +44,7 @@ create table public.balance
 			primary key,
 	money integer,
 	number_of_balance varchar(20),
+	is_lock boolean NOT NULL,
 	user_id integer
 		constraint balance_users_id_fk
 			references users

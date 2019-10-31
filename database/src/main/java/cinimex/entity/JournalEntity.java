@@ -19,4 +19,10 @@ public class JournalEntity {
     private Timestamp time;
     @Column(name = "transfer_text")
     private String transferText;
+    @Column(name = "transfer_id")
+    private Long transferId;
+    @Column(name = "operation_id")
+    private Long operationId;
+
+
 }

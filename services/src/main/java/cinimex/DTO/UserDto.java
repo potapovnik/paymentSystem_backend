@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 @Data
 public class UserDto {
-    private long id;
+    private Long id;
     private String name;
     private String surname;
     private String lastname;

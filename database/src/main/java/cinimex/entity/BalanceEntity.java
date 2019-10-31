@@ -16,6 +16,8 @@ public class BalanceEntity {
     private Integer money;
     @Column(name = "number_of_balance")
     private String numberOfBalance;
-
-
+    @Column(name = "is_lock")
+    private boolean isLock;
+    @Column(name = "user_id")
+    private Long userId;
 }

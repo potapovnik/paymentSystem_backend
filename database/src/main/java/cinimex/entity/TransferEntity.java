@@ -13,6 +13,10 @@ public class TransferEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transfer_seq")
     @SequenceGenerator(name = "transfer_seq", sequenceName = "transfer_id_seq", allocationSize = 1)
     private long id;
+    @Column(name = "from_balance_id")
+    private Long fromBalanceId;
+    @Column(name = "to_balance_id")
+    private Long toBalanceId;
 
 
 }
