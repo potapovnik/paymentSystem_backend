@@ -6,7 +6,7 @@
 
     <!--schema-->
     <include relativeToChangelogFile="true" file="sql/init_database_1.0.sql" />
-
+    <include relativeToChangelogFile="true" file="sql/add_company_payment_2.0.sql" />
     <!--test-data-->
 
 

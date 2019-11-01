@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -42,7 +43,7 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic()
+            http.httpBasic()
                 .and()
                     .authorizeRequests()
                     .antMatchers("/","/registration").permitAll()
@@ -52,10 +53,16 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
                     .loginPage("/login")
                     .permitAll()
                 .and()
+                    .logout().clearAuthentication(true)
+                    .logoutUrl("/logout")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
+                .and()
                     .exceptionHandling()
                     .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
-                    .csrf().disable();
+                    .csrf().disable()
+                    .cors().disable();
 
 
     }

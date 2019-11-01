@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class BalanceService {
     private final BalanceRepository balanceRepository;
-    private final TransferRepository transferRepository;
-    private final JournalRepository journalRepository;
     private final BalanceMapper balanceMapper;
-    private final JournalMapper journalMapper;
 
     public Boolean lockBalance(Long id, Boolean isLock) {
         BalanceEntity balanceOnLock = balanceRepository.findByUserId(id);
