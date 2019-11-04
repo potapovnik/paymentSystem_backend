@@ -54,7 +54,12 @@ public class BalanceService {
         return balanceMapper.toDto(balanceOfUser);
     }
 
-
+    public BalanceDto getBalance(Long id) throws Exception {
+        BalanceEntity balanceOfUser = balanceRepository.findById(id).get();
+        if (balanceOfUser == null)
+            throw new Exception("баланса с id=" + id + " не существует");
+        return balanceMapper.toDto(balanceOfUser);
+    }
 
     public boolean checkUniqueNumberOfBalance(String numberOfBalance) {
         Long countOfCopy = balanceRepository.findAll().stream().filter(balanceEntity -> balanceEntity.getNumberOfBalance() == numberOfBalance).count();

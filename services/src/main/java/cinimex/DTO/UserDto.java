@@ -14,4 +14,5 @@ public class UserDto {
     private String password;
     private Timestamp dateRegistration;
     private Timestamp dob;
+    private Long roleId;
 }

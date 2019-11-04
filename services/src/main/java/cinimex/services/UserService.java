@@ -55,10 +55,13 @@ public class UserService {
     }
 
 
-
     public List<UserDto> getAllUser() {
         List<UsersEntity> allUsers = userRepository.findAll();
         return userMapper.toDto(allUsers);
+    }
+
+    public UserDto findUserByLogin(String login) {
+        return userMapper.toDto(userRepository.findByLogin(login));
     }
 
 }

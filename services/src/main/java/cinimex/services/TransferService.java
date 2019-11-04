@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,6 @@ public class TransferService {
 
     @Transactional
     public boolean transferBalanceToBalance(TransferDto transferDto) {
-
         if (isLock(transferDto.getFromBalance()) || isLock(transferDto.getToBalance()))//если хотя бы один из балансов заблакировано,передача невозможна
             return false;
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
@@ -46,6 +46,7 @@ public class TransferService {
         currentTransfer.setToBalanceId(balanceToOperation.getId());
         Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
 
+        journal.setTime(new Timestamp(System.currentTimeMillis()));
         journal.setTransferId(idCurrentTransfer);
         journalRepository.save(journal);
         return true;
@@ -67,6 +68,8 @@ public class TransferService {
         currentTransfer.setFromBalanceId(balanceFromOperation.getId());
         Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
 
+
+        journal.setTime(new Timestamp(System.currentTimeMillis()));
         journal.setTransferId(idCurrentTransfer);
         journalRepository.save(journal);
         return true;
@@ -87,6 +90,8 @@ public class TransferService {
         currentTransfer.setToBalanceId(balanceToOperation.getId());
         Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
 
+
+        journal.setTime(new Timestamp(System.currentTimeMillis()));
         journal.setTransferId(idCurrentTransfer);
         journalRepository.save(journal);
         return true;

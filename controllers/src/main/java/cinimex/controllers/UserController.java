@@ -50,4 +50,8 @@ public class UserController {
         return () -> new String(Base64.getDecoder()
                 .decode(authToken)).split(":")[0];
     }
+    @GetMapping("/byLogin")
+    public UserDto getUserByLogin(@RequestParam String login){
+        return userService.findUserByLogin(login);
+    }
 }

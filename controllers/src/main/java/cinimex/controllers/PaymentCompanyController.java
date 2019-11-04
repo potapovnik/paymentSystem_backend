@@ -3,12 +3,10 @@ package cinimex.controllers;
 
 import cinimex.DTO.CompanyDto;
 import cinimex.DTO.PaymentCompanyDto;
+import cinimex.DTO.PaymentDto;
 import cinimex.services.PaymentCompanyService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +24,13 @@ public class PaymentCompanyController {
     @GetMapping("allPaymentOfCompany")
     public List<PaymentCompanyDto> getAllPaymentCompany(@RequestParam Long idCompany) {
         return service.findAllPaymentOfCompany(idCompany);
+    }
+    @PostMapping("fromBalance")
+    public boolean addPaymentFromBalance(@RequestBody PaymentDto payment){
+        return service.paymentFromBalance(payment);
+    }
+    @PostMapping("fromCard")
+    public boolean addPaymentFromCard(@RequestBody PaymentDto payment){
+        return service.paymentFromCard(payment);
     }
 }

@@ -9,6 +9,7 @@ public class CompanyDto {
 
     private Long id;
     private String name;
+    private Long balanceId;
     private Integer numberOfCard;
 
 }

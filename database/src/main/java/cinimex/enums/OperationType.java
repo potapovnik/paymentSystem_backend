@@ -6,8 +6,8 @@ public enum  OperationType {
     BALANCE_TO_BALANCE(1L),
     TRANSFER_FROM_CARD(2L),
     TRANSFER_TO_CARD(3L),
-    PAYMENT_FOR_SERVICE_TO_CARD(4L),
-    PAYMENT_FOR_SERVICE_TO_BALANCE(5L);
+    PAYMENT__FROM_BALANCE_TO_BALANCE(4L),
+    PAYMENT_FROM_CARD_TO_BALANCE(5L);
     private final Long id;
 
     OperationType(Long id) {

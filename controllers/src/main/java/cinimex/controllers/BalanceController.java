@@ -22,8 +22,12 @@ public class BalanceController {
 
 
 
-    @GetMapping()
+    @GetMapping("byId")
     public BalanceDto getBalanceByIdUser(@RequestParam Long idUser) throws Exception {
         return balanceService.getBalanceByIdUser(idUser);
+    }
+    @GetMapping
+    public BalanceDto getBalance(@RequestParam Long id) throws Exception {
+        return balanceService.getBalance(id);
     }
 }

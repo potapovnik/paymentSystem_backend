@@ -25,6 +25,8 @@ public class UsersEntity {
     @Column(name = "date_registration")
     private Timestamp dateRegistration;
     private Timestamp dob;
+    @Column(name = "role_id")
+    private Long roleId;
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     public void setPassword(String password) {
         this.password=PASSWORD_ENCODER.encode(password);
