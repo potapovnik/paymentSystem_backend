@@ -27,7 +27,7 @@ public class TransferService {
 
     @Transactional
     public boolean transferBalanceToBalance(TransferDto transferDto) {
-        if (isLock(transferDto.getFromBalance()) || isLock(transferDto.getToBalance()))//если хотя бы один из балансов заблакировано,передача невозможна
+        if (isLock(transferDto.getFromBalance()) || isLock(transferDto.getToBalance()))//если хотя бы один из балансов заблакирован,передача невозможна
             return false;
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
         int moneyOnBalance = balanceFromOperation.getMoney();
