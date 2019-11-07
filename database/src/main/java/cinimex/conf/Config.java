@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan("cinimex.entity")
 @EnableJpaRepositories("cinimex.JPArepository")
 public class Config {
+
 }
