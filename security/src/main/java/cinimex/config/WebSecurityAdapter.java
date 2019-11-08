@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,25 +32,28 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
     @Autowired
     DetailService detailsService;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin").password(passwordEncoder().encode("admin"))
-                .authorities("ROLE_USER");
-    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(detailsService).passwordEncoder(UsersEntity.PASSWORD_ENCODER);
     }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://localhost:4200");
+
+            }
+        };
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-            http.httpBasic()
-                .and()
+            http.cors().and()
                     .authorizeRequests()
-                    .antMatchers("/","/registration").permitAll()
-                    .anyRequest().authenticated()
+                        .antMatchers("/paymentSystem/user/current","/","/registration").permitAll()
+                        .anyRequest().authenticated()
                 .and()
                     .formLogin()
                     .loginPage("/login")
@@ -61,9 +67,9 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
                     .exceptionHandling()
                     .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
-                    .csrf().disable()
-                    .cors().disable();
-
+                    .httpBasic()
+                    .and()
+                    .csrf().disable();
 
     }
 

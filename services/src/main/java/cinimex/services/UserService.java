@@ -1,19 +1,14 @@
 package cinimex.services;
 
-import cinimex.DTO.TransferDto;
 import cinimex.DTO.UserDto;
 import cinimex.JPArepository.*;
-import cinimex.entity.BalanceEntity;
-import cinimex.entity.JournalEntity;
-import cinimex.entity.TransferEntity;
 import cinimex.entity.UsersEntity;
-import cinimex.mapper.JournalMapper;
 import cinimex.mapper.UserMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +18,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final BalanceService balanceService;
 
+    @Transactional
     public UserDto createUser(UserDto newUserDto) throws Exception {
         if (newUserDto == null)
             throw new Exception("dto для создания юзера Null");

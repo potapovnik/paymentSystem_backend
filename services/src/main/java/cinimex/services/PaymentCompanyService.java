@@ -29,31 +29,31 @@ public class PaymentCompanyService {
     private final PaymentUserRepository paymentUserRepository;
     private final TransferService transferService;
 
-    public List<CompanyDto> findAllCompany(){
+    public List<CompanyDto> findAllCompany() {
         return companyMapper.toDto(companyRepository.findAll());
     }
 
-    public List<PaymentCompanyDto> findAllPaymentOfCompany(Long idCompany){
+    public List<PaymentCompanyDto> findAllPaymentOfCompany(Long idCompany) {
         return paymentCompanyMapper.toDto(paymentCompanyRepository.findByCompanyId(idCompany));
     }
+
     @Transactional
-    public boolean paymentFromBalance(PaymentDto paymentDto){
+    public boolean paymentFromBalance(PaymentDto paymentDto) throws Exception {
         PaymentUserEntity paymentUserEntity = paymentUserMapper.fromDto(paymentDto.getPaymentUser());
         boolean isTransfered = transferService.transferBalanceToBalance(paymentDto.getTransfer());
-        if (isTransfered){
-            paymentUserEntity.setPaid(isTransfered);
-            paymentUserRepository.save(paymentUserEntity);
-        }
+        paymentUserEntity.setPaid(isTransfered);
+        paymentUserRepository.save(paymentUserEntity);
+
         return isTransfered;
     }
+
     @Transactional
-    public boolean paymentFromCard (PaymentDto paymentDto){
+    public boolean paymentFromCard(PaymentDto paymentDto) throws Exception {
         PaymentUserEntity paymentUserEntity = paymentUserMapper.fromDto(paymentDto.getPaymentUser());
         boolean isTransfered = transferService.transferOnBalance(paymentDto.getTransfer());
-        if (isTransfered){
-            paymentUserEntity.setPaid(isTransfered);
-            paymentUserRepository.save(paymentUserEntity);
-        }
+        paymentUserEntity.setPaid(isTransfered);
+        paymentUserRepository.save(paymentUserEntity);
+
         return isTransfered;
     }
 }

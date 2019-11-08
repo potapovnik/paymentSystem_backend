@@ -10,6 +10,7 @@ import cinimex.entity.TransferEntity;
 import cinimex.mapper.BalanceMapper;
 import cinimex.mapper.JournalMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class TransferService {
     private final JournalMapper journalMapper;
 
     @Transactional
-    public boolean transferBalanceToBalance(TransferDto transferDto) {
+    public boolean transferBalanceToBalance(TransferDto transferDto) throws Exception {
         if (isLock(transferDto.getFromBalance()) || isLock(transferDto.getToBalance()))//если хотя бы один из балансов заблакирован,передача невозможна
             return false;
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
@@ -41,19 +42,14 @@ public class TransferService {
         balanceToOperation.setMoney(balanceToOperation.getMoney() + journal.getMoney()); // добавляем пересланные деньги
         balanceRepository.save(balanceToOperation);
 
-        TransferEntity currentTransfer = new TransferEntity();
-        currentTransfer.setFromBalanceId(balanceFromOperation.getId());
-        currentTransfer.setToBalanceId(balanceToOperation.getId());
-        Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
-
-        journal.setTime(new Timestamp(System.currentTimeMillis()));
-        journal.setTransferId(idCurrentTransfer);
-        journalRepository.save(journal);
+        Long idCurrentTransfer = saveTransfer(balanceFromOperation, balanceToOperation);
+        if (!saveJournal(idCurrentTransfer, journal))
+            throw new Exception("Ошибка в сохранении журнала в базе данных");
         return true;
     }
 
     @Transactional
-    public boolean transferOnCard(TransferDto transferDto) {
+    public boolean transferOnCard(TransferDto transferDto) throws Exception {
         if (isLock(transferDto.getFromBalance()))
             return false;
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
@@ -64,40 +60,30 @@ public class TransferService {
         balanceFromOperation.setMoney(moneyOnBalance - journal.getMoney());
         balanceRepository.save(balanceFromOperation);
 
-        TransferEntity currentTransfer = new TransferEntity();
-        currentTransfer.setFromBalanceId(balanceFromOperation.getId());
-        Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
-
-
-        journal.setTime(new Timestamp(System.currentTimeMillis()));
-        journal.setTransferId(idCurrentTransfer);
-        journalRepository.save(journal);
+        Long idCurrentTransfer = saveTransfer(balanceFromOperation, null);
+        if (!saveJournal(idCurrentTransfer, journal))
+            throw new Exception("Ошибка в сохранении журнала в базе данных");
         return true;
     }
 
     @Transactional
-    public boolean transferOnBalance(TransferDto transferDto) {
+    public boolean transferOnBalance(TransferDto transferDto) throws Exception {
         if (isLock(transferDto.getToBalance()))
             return false;
-
         BalanceEntity balanceToOperation = balanceRepository.findByNumberOfBalance(transferDto.getToBalance());
         JournalEntity journal = journalMapper.fromDto(transferDto.getJournal());
         balanceToOperation.setMoney(balanceToOperation.getMoney() + journal.getMoney());
         balanceRepository.save(balanceToOperation);
 
 
-        TransferEntity currentTransfer = new TransferEntity();
-        currentTransfer.setToBalanceId(balanceToOperation.getId());
-        Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
+        Long idCurrentTransfer = saveTransfer(null, balanceToOperation);
+        if (!saveJournal(idCurrentTransfer, journal))
+            throw new Exception("Ошибка в сохранении журнала в базе данных");
 
-
-        journal.setTime(new Timestamp(System.currentTimeMillis()));
-        journal.setTransferId(idCurrentTransfer);
-        journalRepository.save(journal);
         return true;
     }
 
-    public List<TransferDto> allTransferAndJournalOfUser(Long id) throws Exception {
+    public List<TransferDto> allTransferAndJournalOfUser(Long id) throws Exception {//проверить ошибку и пустоту журнала для несуществующего юзера
         Long idBalanceOfUser = balanceRepository.findByUserId(id).getId();
         List<TransferEntity> transfersOfUser = transferRepository.findByFromBalanceId(idBalanceOfUser);// найдём все переводы с баланса
         transfersOfUser.addAll(transferRepository.findByToBalanceId(idBalanceOfUser)); // найдём все перевода на баланс
@@ -105,7 +91,6 @@ public class TransferService {
         transfersOfUser.stream().forEach(transferEntity -> journalOfUser.add(journalRepository.findByTransferId(transferEntity.getId()).get(0)));
         if (transfersOfUser.size() != journalOfUser.size())
             throw new Exception("Ошибка в соответсвии журнала и переводов в базе данных");
-
         List<TransferDto> transfers = new ArrayList<>();
         for (int i = 0; i < transfersOfUser.size(); i++) {
             TransferDto currentTransfer = new TransferDto();
@@ -126,5 +111,24 @@ public class TransferService {
         if (id == null)
             return null;
         return balanceRepository.findById(id).get().getNumberOfBalance();
+    }
+
+    public Long saveTransfer(BalanceEntity balanceFromOperation, BalanceEntity balanceToOperation) {
+        TransferEntity currentTransfer = new TransferEntity();
+        if (balanceFromOperation != null)
+            currentTransfer.setFromBalanceId(balanceFromOperation.getId());
+        if (balanceToOperation != null)
+            currentTransfer.setToBalanceId(balanceToOperation.getId());
+        Long idCurrentTransfer = transferRepository.save(currentTransfer).getId();
+        return idCurrentTransfer;
+    }
+
+    public boolean saveJournal(Long idCurrentTransfer, JournalEntity journal) {
+        journal.setTime(new Timestamp(System.currentTimeMillis()));
+        journal.setTransferId(idCurrentTransfer);
+        JournalEntity saveJournal = journalRepository.save(journal);
+        if (saveJournal == null)
+            return false;
+        return true;
     }
 }

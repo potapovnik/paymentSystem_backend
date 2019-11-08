@@ -21,12 +21,12 @@ public class BalanceService {
     private final BalanceRepository balanceRepository;
     private final BalanceMapper balanceMapper;
 
-    public Boolean lockBalance(Long id, Boolean isLock) {
+    public Boolean lockBalance(Long id, Boolean isLock) throws Exception {
+        if (isLock == null){
+            throw  new Exception("Передано неверное значение isLock");
+        }
         BalanceEntity balanceOnLock = balanceRepository.findByUserId(id);
-        if (isLock == true)
-            balanceOnLock.setLock(true);
-        if (isLock == false)
-            balanceOnLock.setLock(false);
+        balanceOnLock.setLock(isLock);
         if (balanceRepository.save(balanceOnLock) == null)
             return false;
         return true;
