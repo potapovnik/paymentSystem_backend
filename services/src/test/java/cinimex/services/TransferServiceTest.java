@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ContextConfiguration(
         classes = {H2JpaConfig.class, TransferService.class, TestConfig.class},
         loader = AnnotationConfigContextLoader.class)
-@AllArgsConstructor
 class TransferServiceTest {
     @Resource
     private BalanceRepository balanceRepository;

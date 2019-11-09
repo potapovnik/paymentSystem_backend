@@ -3,6 +3,7 @@ package cinimex.services;
 import cinimex.DTO.UserDto;
 import cinimex.JPArepository.*;
 import cinimex.entity.UsersEntity;
+import cinimex.exceptions.LogicException;
 import cinimex.mapper.UserMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ public class UserService {
     private final BalanceService balanceService;
 
     @Transactional
-    public UserDto createUser(UserDto newUserDto) throws Exception {
+    public UserDto createUser(UserDto newUserDto) {
         if (newUserDto == null)
-            throw new Exception("dto для создания юзера Null");
+            throw new LogicException("dto для создания юзера Null");
         UsersEntity newUser = userMapper.fromDto(newUserDto);
         newUser.setDateRegistration(new Timestamp(System.currentTimeMillis()));
         newUser.setId(null);
@@ -30,17 +31,17 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
-    public boolean deleteUser(Long id) throws Exception {
+    public boolean deleteUser(Long id) {
         if (userRepository.findById(id).isPresent())
-            throw new Exception("(попытка удаления) - юзера с данным id=" + id.toString() + " не существует");
+            throw new LogicException("(попытка удаления) - юзера с данным id=" + id.toString() + " не существует");
         userRepository.deleteById(id);
         return true;
 
     }
 
-    public UserDto updateUser(UserDto updateUserDto) throws Exception {
+    public UserDto updateUser(UserDto updateUserDto) {
         if (updateUserDto == null)
-            throw new Exception("dto для обовления данных юзера Null");
+            throw new LogicException("dto для обовления данных юзера Null");
         if (updateUserDto.getPassword() == null || updateUserDto.getPassword() == "") {
             String currentPassword = userRepository.findById(updateUserDto.getId()).get().getPassword();
             updateUserDto.setPassword(currentPassword);

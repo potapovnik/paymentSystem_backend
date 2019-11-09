@@ -38,7 +38,7 @@ public class PaymentCompanyService {
     }
 
     @Transactional
-    public boolean paymentFromBalance(PaymentDto paymentDto) throws Exception {
+    public boolean paymentFromBalance(PaymentDto paymentDto)   {
         PaymentUserEntity paymentUserEntity = paymentUserMapper.fromDto(paymentDto.getPaymentUser());
         boolean isTransfered = transferService.transferBalanceToBalance(paymentDto.getTransfer());
         paymentUserEntity.setPaid(isTransfered);
@@ -48,7 +48,7 @@ public class PaymentCompanyService {
     }
 
     @Transactional
-    public boolean paymentFromCard(PaymentDto paymentDto) throws Exception {
+    public boolean paymentFromCard(PaymentDto paymentDto)   {
         PaymentUserEntity paymentUserEntity = paymentUserMapper.fromDto(paymentDto.getPaymentUser());
         boolean isTransfered = transferService.transferOnBalance(paymentDto.getTransfer());
         paymentUserEntity.setPaid(isTransfered);

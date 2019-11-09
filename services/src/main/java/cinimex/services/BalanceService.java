@@ -8,6 +8,7 @@ import cinimex.JPArepository.TransferRepository;
 import cinimex.entity.BalanceEntity;
 import cinimex.entity.JournalEntity;
 import cinimex.entity.TransferEntity;
+import cinimex.exceptions.LogicException;
 import cinimex.mapper.BalanceMapper;
 import cinimex.mapper.JournalMapper;
 import cinimex.utils.NumberGenerator;
@@ -21,9 +22,9 @@ public class BalanceService {
     private final BalanceRepository balanceRepository;
     private final BalanceMapper balanceMapper;
 
-    public Boolean lockBalance(Long id, Boolean isLock) throws Exception {
+    public Boolean lockBalance(Long id, Boolean isLock) {
         if (isLock == null){
-            throw  new Exception("Передано неверное значение isLock");
+            throw  new LogicException("Передано неверное значение isLock");
         }
         BalanceEntity balanceOnLock = balanceRepository.findByUserId(id);
         balanceOnLock.setLock(isLock);
@@ -47,17 +48,17 @@ public class BalanceService {
         return true;
     }
 
-    public BalanceDto getBalanceByIdUser(Long idUser) throws Exception {
+    public BalanceDto getBalanceByIdUser(Long idUser)  {
         BalanceEntity balanceOfUser = balanceRepository.findByUserId(idUser);
         if (balanceOfUser == null)
-            throw new Exception("У юзера с id" + idUser + " не существует ни одного баланса");
+            throw new LogicException("У юзера с id" + idUser + " не существует ни одного баланса");
         return balanceMapper.toDto(balanceOfUser);
     }
 
-    public BalanceDto getBalance(Long id) throws Exception {
+    public BalanceDto getBalance(Long id) {
         BalanceEntity balanceOfUser = balanceRepository.findById(id).get();
         if (balanceOfUser == null)
-            throw new Exception("баланса с id=" + id + " не существует");
+            throw new LogicException("баланса с id=" + id + " не существует");
         return balanceMapper.toDto(balanceOfUser);
     }
 

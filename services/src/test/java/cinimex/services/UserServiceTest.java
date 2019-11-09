@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -52,6 +54,20 @@ class UserServiceTest {
         assertEquals(userRepository.findById(id).isPresent(), false);
 
     }
+   /* @Test
+    void testUpdateUser(){
+        UserDto userDto = new UserDto();
+        Long id = userRepository.save(new UsersEntity()).getId();
+        String password = "password";
+        userDto.setId(id);
+        userDto.setPassword(password);
+        assertNotNull(userService.updateUser(userDto));
+        assertNotNull(userRepository.findById(id).get().getPassword());
+        String savedPassword = userRepository.findById(id).get().getPassword();
+        userDto.setPassword(null);
+        assertNotNull(userService.updateUser(userDto));
+        assertEquals(userRepository.findById(id).get().getPassword(),savedPassword);
+    }*/
 
     @Test
     void findUserByLogin() {
@@ -62,6 +78,7 @@ class UserServiceTest {
         assertNotNull(userRepository.findByLogin(login));
         assertNull(userRepository.findByLogin("notExistEntity"));
     }
+
 
 
 }

@@ -7,6 +7,7 @@ import cinimex.JPArepository.TransferRepository;
 import cinimex.entity.BalanceEntity;
 import cinimex.entity.JournalEntity;
 import cinimex.entity.TransferEntity;
+import cinimex.exceptions.LogicException;
 import cinimex.mapper.BalanceMapper;
 import cinimex.mapper.JournalMapper;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class TransferService {
     private final JournalMapper journalMapper;
 
     @Transactional
-    public boolean transferBalanceToBalance(TransferDto transferDto) throws Exception {
+    public boolean transferBalanceToBalance(TransferDto transferDto) {
         if (isLock(transferDto.getFromBalance()) || isLock(transferDto.getToBalance()))//если хотя бы один из балансов заблакирован,передача невозможна
             return false;
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
@@ -44,12 +45,12 @@ public class TransferService {
 
         Long idCurrentTransfer = saveTransfer(balanceFromOperation, balanceToOperation);
         if (!saveJournal(idCurrentTransfer, journal))
-            throw new Exception("Ошибка в сохранении журнала в базе данных");
+            throw new LogicException("Ошибка в сохранении журнала в базе данных");
         return true;
     }
 
     @Transactional
-    public boolean transferOnCard(TransferDto transferDto) throws Exception {
+    public boolean transferOnCard(TransferDto transferDto) {
         if (isLock(transferDto.getFromBalance()))
             return false;
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
@@ -62,12 +63,12 @@ public class TransferService {
 
         Long idCurrentTransfer = saveTransfer(balanceFromOperation, null);
         if (!saveJournal(idCurrentTransfer, journal))
-            throw new Exception("Ошибка в сохранении журнала в базе данных");
+            throw new LogicException("Ошибка в сохранении журнала в базе данных");
         return true;
     }
 
     @Transactional
-    public boolean transferOnBalance(TransferDto transferDto) throws Exception {
+    public boolean transferOnBalance(TransferDto transferDto) {
         if (isLock(transferDto.getToBalance()))
             return false;
         BalanceEntity balanceToOperation = balanceRepository.findByNumberOfBalance(transferDto.getToBalance());
@@ -78,19 +79,19 @@ public class TransferService {
 
         Long idCurrentTransfer = saveTransfer(null, balanceToOperation);
         if (!saveJournal(idCurrentTransfer, journal))
-            throw new Exception("Ошибка в сохранении журнала в базе данных");
+            throw new LogicException("Ошибка в сохранении журнала в базе данных");
 
         return true;
     }
 
-    public List<TransferDto> allTransferAndJournalOfUser(Long id) throws Exception {//проверить ошибку и пустоту журнала для несуществующего юзера
+    public List<TransferDto> allTransferAndJournalOfUser(Long id)  {//проверить ошибку и пустоту журнала для несуществующего юзера
         Long idBalanceOfUser = balanceRepository.findByUserId(id).getId();
         List<TransferEntity> transfersOfUser = transferRepository.findByFromBalanceId(idBalanceOfUser);// найдём все переводы с баланса
         transfersOfUser.addAll(transferRepository.findByToBalanceId(idBalanceOfUser)); // найдём все перевода на баланс
         List<JournalEntity> journalOfUser = new ArrayList<>();
         transfersOfUser.stream().forEach(transferEntity -> journalOfUser.add(journalRepository.findByTransferId(transferEntity.getId()).get(0)));
         if (transfersOfUser.size() != journalOfUser.size())
-            throw new Exception("Ошибка в соответсвии журнала и переводов в базе данных");
+            throw new LogicException("Ошибка в соответсвии журнала и переводов в базе данных");
         List<TransferDto> transfers = new ArrayList<>();
         for (int i = 0; i < transfersOfUser.size(); i++) {
             TransferDto currentTransfer = new TransferDto();
