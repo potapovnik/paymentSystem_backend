@@ -14,6 +14,7 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -37,6 +38,7 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(detailsService).passwordEncoder(UsersEntity.PASSWORD_ENCODER);
     }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurerAdapter() {
@@ -50,26 +52,31 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-            http.cors().and()
-                    .authorizeRequests()
-                        .antMatchers("/paymentSystem/user/current","/","/registration").permitAll()
-                        .anyRequest().authenticated()
+        http.httpBasic()
                 .and()
-                    .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
+                    .cors()
                 .and()
-                    .logout().clearAuthentication(true)
-                    .logoutUrl("/logout")
-                    .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID")
+                .authorizeRequests()
+                .antMatchers( "/", "/registration").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                    .exceptionHandling()
-                    .authenticationEntryPoint(authenticationEntryPoint)
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
                 .and()
-                    .httpBasic()
-                    .and()
-                    .csrf().disable();
+                .logout().clearAuthentication(true)
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .sessionManagement().maximumSessions(1)
+                .and()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and()
+                .csrf().disable();
 
     }
 

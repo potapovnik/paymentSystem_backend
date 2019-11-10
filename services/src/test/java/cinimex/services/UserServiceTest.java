@@ -54,7 +54,7 @@ class UserServiceTest {
         assertEquals(userRepository.findById(id).isPresent(), false);
 
     }
-   /* @Test
+    @Test
     void testUpdateUser(){
         UserDto userDto = new UserDto();
         Long id = userRepository.save(new UsersEntity()).getId();
@@ -67,7 +67,7 @@ class UserServiceTest {
         userDto.setPassword(null);
         assertNotNull(userService.updateUser(userDto));
         assertEquals(userRepository.findById(id).get().getPassword(),savedPassword);
-    }*/
+    }
 
     @Test
     void findUserByLogin() {

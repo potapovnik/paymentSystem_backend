@@ -29,17 +29,21 @@ public class TransferService {
 
     @Transactional
     public boolean transferBalanceToBalance(TransferDto transferDto) {
-        if (isLock(transferDto.getFromBalance()) || isLock(transferDto.getToBalance()))//если хотя бы один из балансов заблакирован,передача невозможна
-            return false;
+        if (isLock(transferDto.getFromBalance())) //если хотя бы один из балансов заблакирован,передача невозможна
+            throw new LogicException("Баланс с которого производится перевод заблокирован");
+        if (isLock(transferDto.getToBalance()))
+            throw new LogicException("Баланс на который производиться перевод заблокирован");
+
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
         int moneyOnBalance = balanceFromOperation.getMoney();
         JournalEntity journal = journalMapper.fromDto(transferDto.getJournal());
         if (moneyOnBalance < transferDto.getJournal().getMoney())
-            return false;
+            throw new LogicException("На балансе недостаточно средств для перевода");
 
         balanceFromOperation.setMoney(moneyOnBalance - journal.getMoney()); // вычитаем деньги которые ушли со счёта
         balanceRepository.save(balanceFromOperation);
         BalanceEntity balanceToOperation = balanceRepository.findByNumberOfBalance(transferDto.getToBalance());
+
         balanceToOperation.setMoney(balanceToOperation.getMoney() + journal.getMoney()); // добавляем пересланные деньги
         balanceRepository.save(balanceToOperation);
 
@@ -52,12 +56,13 @@ public class TransferService {
     @Transactional
     public boolean transferOnCard(TransferDto transferDto) {
         if (isLock(transferDto.getFromBalance()))
-            return false;
+            throw new LogicException("Баланс заблокирован, перевод невозможен");
+
         BalanceEntity balanceFromOperation = balanceRepository.findByNumberOfBalance(transferDto.getFromBalance());
         int moneyOnBalance = balanceFromOperation.getMoney();
         JournalEntity journal = journalMapper.fromDto(transferDto.getJournal());
         if (moneyOnBalance < transferDto.getJournal().getMoney())
-            return false;
+            throw new LogicException("На балансе недостаточно средств для перевода");
         balanceFromOperation.setMoney(moneyOnBalance - journal.getMoney());
         balanceRepository.save(balanceFromOperation);
 
@@ -70,12 +75,11 @@ public class TransferService {
     @Transactional
     public boolean transferOnBalance(TransferDto transferDto) {
         if (isLock(transferDto.getToBalance()))
-            return false;
+            throw new LogicException("Баланс заблокирован, перевод невозможен");
         BalanceEntity balanceToOperation = balanceRepository.findByNumberOfBalance(transferDto.getToBalance());
         JournalEntity journal = journalMapper.fromDto(transferDto.getJournal());
         balanceToOperation.setMoney(balanceToOperation.getMoney() + journal.getMoney());
         balanceRepository.save(balanceToOperation);
-
 
         Long idCurrentTransfer = saveTransfer(null, balanceToOperation);
         if (!saveJournal(idCurrentTransfer, journal))
@@ -84,7 +88,7 @@ public class TransferService {
         return true;
     }
 
-    public List<TransferDto> allTransferAndJournalOfUser(Long id)  {//проверить ошибку и пустоту журнала для несуществующего юзера
+    public List<TransferDto> allTransferAndJournalOfUser(Long id) {//проверить ошибку и пустоту журнала для несуществующего юзера
         Long idBalanceOfUser = balanceRepository.findByUserId(id).getId();
         List<TransferEntity> transfersOfUser = transferRepository.findByFromBalanceId(idBalanceOfUser);// найдём все переводы с баланса
         transfersOfUser.addAll(transferRepository.findByToBalanceId(idBalanceOfUser)); // найдём все перевода на баланс
@@ -104,7 +108,10 @@ public class TransferService {
     }
 
     public boolean isLock(String numberOfBalance) {
-        return balanceRepository.findByNumberOfBalance(numberOfBalance).isLock();
+        BalanceEntity balance = balanceRepository.findByNumberOfBalance(numberOfBalance);
+        if (balance == null)
+            throw new LogicException("Указанного баланса не существует");
+        return balance.isLock();
     }
 
 

@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Console;
+
 @Service
 @AllArgsConstructor
 public class BalanceService {
@@ -50,8 +52,11 @@ public class BalanceService {
 
     public BalanceDto getBalanceByIdUser(Long idUser)  {
         BalanceEntity balanceOfUser = balanceRepository.findByUserId(idUser);
-        if (balanceOfUser == null)
-            throw new LogicException("У юзера с id" + idUser + " не существует ни одного баланса");
+        if (balanceOfUser == null) {
+            throw new LogicException("Ошибка системы: у вас не существует ни одного баланса");
+           //  У юзера с id " + idUser + " не существует ни одного баланса
+        }
+
         return balanceMapper.toDto(balanceOfUser);
     }
 
