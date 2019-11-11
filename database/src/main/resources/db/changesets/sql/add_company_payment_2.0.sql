@@ -46,7 +46,6 @@ create table payment_user
 	user_id integer
 		constraint payment_user_users_id_fk
 			references users,
-	money integer,
 	paid boolean
 )
 ;

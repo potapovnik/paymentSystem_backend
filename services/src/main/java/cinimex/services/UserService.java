@@ -1,7 +1,9 @@
 package cinimex.services;
 
+import cinimex.DTO.RoleDto;
 import cinimex.DTO.UserDto;
 import cinimex.JPArepository.*;
+import cinimex.entity.RoleEntity;
 import cinimex.entity.UsersEntity;
 import cinimex.exceptions.LogicException;
 import cinimex.mapper.UserMapper;
@@ -18,6 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final BalanceService balanceService;
+    private final RoleRepository roleRepository;
 
     @Transactional
     public UserDto createUser(UserDto newUserDto) {
@@ -42,15 +45,23 @@ public class UserService {
     public UserDto updateUser(UserDto updateUserDto) {
         if (updateUserDto == null)
             throw new LogicException("dto для обовления данных юзера Null");
-        if (updateUserDto.getPassword() == null || updateUserDto.getPassword() == "") {
-            String currentPassword = userRepository.findById(updateUserDto.getId()).get().getPassword();
-            updateUserDto.setPassword(currentPassword);
-        }
         UsersEntity updateUser = userMapper.fromDto(updateUserDto);
+        if (updateUserDto.getPassword() == null) {
+            String currentPassword = userRepository.findById(updateUserDto.getId()).get().getPassword();
+            updateUser.setPasswordWithoutEncode(currentPassword);
+        }
         UsersEntity updatedUser = userRepository.save(updateUser);
         return userMapper.toDto(updatedUser);
     }
 
+    public RoleDto getRoleOfUser(Long id) {
+        UsersEntity user = userRepository.findById(id).get();
+        RoleEntity role = roleRepository.findById(user.getRoleId()).get();
+        RoleDto newRoleDto = new RoleDto();
+        newRoleDto.setId(role.getId());
+        newRoleDto.setName(role.getRole().name());
+        return newRoleDto;
+    }
 
     public List<UserDto> getAllUser() {
         List<UsersEntity> allUsers = userRepository.findAll();

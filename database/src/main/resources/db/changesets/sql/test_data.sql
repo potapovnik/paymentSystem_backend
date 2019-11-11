@@ -1,5 +1,5 @@
-insert into role (id, name) VALUES (1,'administrator');
-insert into role (id, name) VALUES (2,'user');
+insert into role (id, name) VALUES (1,'ADMIN');
+insert into role (id, name) VALUES (2,'USER');
 
 insert into operation (id, name) VALUES (1,'BALANCE_TO_BALANCE');
 insert into operation (id, name) VALUES (2,'TRANSFER_FROM_CARD');

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -39,44 +40,33 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(detailsService).passwordEncoder(UsersEntity.PASSWORD_ENCODER);
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:4200");
-
-            }
-        };
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic()
                 .and()
-                    .cors()
+                    .authorizeRequests()
+                    .antMatchers("/balance","/user/registerNewUser","/paymentCompany/**", "/", "/registration").permitAll()
+                    .anyRequest().authenticated()
                 .and()
-                .authorizeRequests()
-                .antMatchers( "/", "/registration").permitAll()
-                .anyRequest().authenticated()
+                    .formLogin()
+                    .loginPage("/login")
+                    .permitAll()
                 .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
+                    .logout().clearAuthentication(true)
+                    .logoutUrl("/logout")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
                 .and()
-                .logout().clearAuthentication(true)
-                .logoutUrl("/logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
+                    .exceptionHandling()
+                    .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
+                    .sessionManagement().maximumSessions(1)
                 .and()
-                .sessionManagement().maximumSessions(1)
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .and()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .and()
-                .csrf().disable();
+                    .csrf().disable()
+                    .cors().disable();
 
     }
 
@@ -86,9 +76,6 @@ public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    private AuthenticationSuccessHandler successHandler() {
-        return new MySimpleUrlAuthenticationSuccessHandler();
-    }
 
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {

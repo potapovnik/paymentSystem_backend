@@ -28,10 +28,15 @@ public class UsersEntity {
     @Column(name = "role_id")
     private Long roleId;
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+
     public void setPassword(String password) {
-        this.password=PASSWORD_ENCODER.encode(password);
+        if (password == null)
+            setPasswordWithoutEncode(password);
+        else
+            this.password = PASSWORD_ENCODER.encode(password);
     }
-    public void setPasswordWithoutEncode(String password){
+
+    public void setPasswordWithoutEncode(String password) {
         this.password = password;
     }
 }

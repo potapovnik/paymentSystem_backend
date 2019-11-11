@@ -1,5 +1,6 @@
 package cinimex.controllers;
 
+import cinimex.DTO.RoleDto;
 import cinimex.DTO.TransferDto;
 import cinimex.DTO.UserDto;
 import cinimex.services.UserService;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
+
 public class UserController {
     private final UserService userService;
 
@@ -50,8 +52,14 @@ public class UserController {
         return () -> new String(Base64.getDecoder()
                 .decode(authToken)).split(":")[0];
     }
+
+    @GetMapping("/roleOfUser")
+    public RoleDto getRoleOfUser(@RequestParam Long id) {
+        return userService.getRoleOfUser(id);
+    }
+
     @GetMapping("/byLogin")
-    public UserDto getUserByLogin(@RequestParam String login){
+    public UserDto getUserByLogin(@RequestParam String login) {
         return userService.findUserByLogin(login);
     }
 }
