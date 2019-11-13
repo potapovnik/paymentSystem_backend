@@ -5,6 +5,7 @@ import cinimex.H2JpaConfig;
 import cinimex.JPArepository.BalanceRepository;
 import cinimex.JPArepository.UserRepository;
 import cinimex.config.TestConfig;
+import cinimex.entity.BalanceEntity;
 import cinimex.entity.UsersEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -38,6 +40,7 @@ class UserServiceTest {
     @Test
     void testCreateUser() throws Exception {
         UserDto newUser = new UserDto();
+        newUser.setLogin("login");
         newUser.setPassword("password");
         UserDto savedUserDto = userService.createUser(newUser);
         assertNotNull(savedUserDto.getId());
@@ -48,10 +51,13 @@ class UserServiceTest {
     @Test
     void testDeleteUser() throws Exception {
         UsersEntity newUser = new UsersEntity();
-        newUser.setId(100L);
+        BalanceEntity balance = new BalanceEntity();
+        newUser.setId(null);
         Long id = userRepository.save(newUser).getId();
+        balance.setUserId(id);
+        balanceRepository.save(balance);
         userService.deleteUser(id);
-        assertEquals(userRepository.findById(id).isPresent(), false);
+        assertEquals(userRepository.findById(id).get().isDeleted(), true);
 
     }
     @Test

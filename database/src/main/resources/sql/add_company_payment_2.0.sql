@@ -1,10 +1,10 @@
 
 
-create sequence company_id_seq;
-create sequence payment_company_id_seq;
-create sequence payment_user_id_seq;
+create sequence IF NOT EXISTS company_id_seq;
+create sequence IF NOT EXISTS payment_company_id_seq;
+create sequence IF NOT EXISTS payment_user_id_seq;
 
-create table company
+create table IF NOT EXISTS company
 (
 	id bigint default company_id_seq.nextval not null
 		constraint company_pk
@@ -18,7 +18,7 @@ create table company
 ;
 
 
-create table payment_company
+create table IF NOT EXISTS payment_company
 (
 	id bigint default payment_company_id_seq.nextval not null
 		constraint payment_company_pkey
@@ -31,11 +31,11 @@ create table payment_company
 )
 ;
 
-create unique index payment_company_name_uindex
+create unique index IF NOT EXISTS payment_company_name_uindex
 	on payment_company (name)
 ;
 
-create table payment_user
+create table IF NOT EXISTS payment_user
 (
 	id bigint default payment_user_id_seq.nextval not null
 		constraint payment_user_pkey
@@ -46,7 +46,6 @@ create table payment_user
 	user_id integer
 		constraint payment_user_users_id_fk
 			references users,
-	money integer,
 	paid boolean
 )
 ;

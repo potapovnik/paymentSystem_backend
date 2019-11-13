@@ -12,8 +12,6 @@ import java.util.Objects;
 public class OperationEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "operation_seq")
-    @SequenceGenerator(name = "operation_seq", sequenceName = "operation_id_seq", allocationSize = 1)
     private long id;
 
     @Column(name = "name")

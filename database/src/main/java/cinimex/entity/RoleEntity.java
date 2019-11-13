@@ -11,8 +11,6 @@ import java.util.Objects;
 @Data
 public class RoleEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_seq")
-    @SequenceGenerator(name = "role_seq", sequenceName = "role_id_seq", allocationSize = 1)
     private long id;
     @Column(name = "name")
     @Enumerated(EnumType.STRING)

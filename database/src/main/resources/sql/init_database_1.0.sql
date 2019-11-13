@@ -1,13 +1,11 @@
 
-create sequence role_id_seq;
-create sequence users_id_seq;
-create sequence transfer_id_seq;
-create sequence operation_id_seq;
-create sequence journal_id_seq;
-create sequence balance_id_seq;
-create table role
+create sequence IF NOT EXISTS users_id_seq;
+create sequence IF NOT EXISTS transfer_id_seq;
+create sequence IF NOT EXISTS journal_id_seq;
+create sequence IF NOT EXISTS balance_id_seq;
+create table IF NOT EXISTS role
 (
-	id bigint  default role_id_seq.nextval not null
+	id integer not null
 		constraint role_pkey
 			primary key,
 	name varchar(100)
@@ -15,7 +13,7 @@ create table role
 ;
 
 
-create table users
+create table IF NOT EXISTS users
 (
 	id bigint default users_id_seq.nextval not null
 		constraint users_pkey
@@ -29,15 +27,16 @@ create table users
 		constraint users_role_id_fk
 			references role,
 	date_registration timestamp,
+	is_deleted boolean NOT NULL,
 	dob timestamp
 )
 ;
 
-create unique index users_login_uindex
+create unique index IF NOT EXISTS users_login_uindex
 	on users (login)
 ;
 
-create table balance
+create table IF NOT EXISTS balance
 (
 	id bigint default balance_id_seq.nextval not null
 		constraint balance_pkey
@@ -52,11 +51,11 @@ create table balance
 ;
 
 
-create unique index balance_number_of_balance_uindex
+create unique index IF NOT EXISTS balance_number_of_balance_uindex
 	on balance (number_of_balance)
 ;
 
-create table transfer
+create table IF NOT EXISTS transfer
 (
 	id bigint default transfer_id_seq.nextval not null
 		constraint transfer_pk
@@ -71,9 +70,9 @@ create table transfer
 ;
 
 
-create table operation
+create table IF NOT EXISTS operation
 (
-	id bigint default operation_id_seq.nextval not null
+	id integer not null
 		constraint operation_pkey
 			primary key,
 	name varchar(200)
@@ -81,7 +80,7 @@ create table operation
 ;
 
 
-create table journal
+create table IF NOT EXISTS journal
 (
 	id bigint default journal_id_seq.nextval not null
 		constraint journal_pkey

@@ -3,6 +3,7 @@ package cinimex.services;
 import cinimex.DTO.RoleDto;
 import cinimex.DTO.UserDto;
 import cinimex.JPArepository.*;
+import cinimex.entity.BalanceEntity;
 import cinimex.entity.RoleEntity;
 import cinimex.entity.UsersEntity;
 import cinimex.exceptions.LogicException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,12 +23,16 @@ public class UserService {
     private final UserMapper userMapper;
     private final BalanceService balanceService;
     private final RoleRepository roleRepository;
+    private final BalanceRepository balanceRepository;
 
     @Transactional
     public UserDto createUser(UserDto newUserDto) {
         if (newUserDto == null)
             throw new LogicException("dto для создания юзера Null");
         UsersEntity newUser = userMapper.fromDto(newUserDto);
+        boolean loginExist = userRepository.findByLogin(newUser.getLogin()) != null ? true : false;
+        if (loginExist)
+            throw new LogicException("Пользователь с таким логином уже существует");
         newUser.setDateRegistration(new Timestamp(System.currentTimeMillis()));
         newUser.setId(null);
         UsersEntity savedUser = userRepository.save(newUser);
@@ -35,9 +41,14 @@ public class UserService {
     }
 
     public boolean deleteUser(Long id) {
-        if (userRepository.findById(id).isPresent())
+        if (!userRepository.findById(id).isPresent())
             throw new LogicException("(попытка удаления) - юзера с данным id=" + id.toString() + " не существует");
-        userRepository.deleteById(id);
+        UsersEntity userOnDelete = userRepository.findById(id).get();
+        userOnDelete.setDeleted(true);
+        userRepository.save(userOnDelete);
+        BalanceEntity balanceOfUser = balanceRepository.findByUserId(userOnDelete.getId());
+        balanceOfUser.setLock(true);
+        balanceRepository.save(balanceOfUser);
         return true;
 
     }
@@ -65,7 +76,12 @@ public class UserService {
 
     public List<UserDto> getAllUser() {
         List<UsersEntity> allUsers = userRepository.findAll();
-        return userMapper.toDto(allUsers);
+        List<UsersEntity> allUsersWithoutDeleted = new ArrayList<>();
+        for (UsersEntity current : allUsers) {
+            if (current.isDeleted() == false)
+                allUsersWithoutDeleted.add(current);
+        }
+        return userMapper.toDto(allUsersWithoutDeleted);
     }
 
     public UserDto findUserByLogin(String login) {

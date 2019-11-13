@@ -8,16 +8,16 @@ insert into operation (id, name) VALUES (4,'PAYMENT_FROM_BALANCE_TO_BALANCE');
 insert into operation (id, name) VALUES (5,'PAYMENT_FROM_CARD_TO_BALANCE');
 insert into operation (id, name) VALUES (6,'PAYMENT_FROM_CARD_AND_BALANCE_TO_BALANCE');
 
-insert into users (name, surname, lastname, login, password, role_id, date_registration, dob)
-VALUES ('Иван','Потёмкин','Фёдорович','admin','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',1,null ,null );
-insert into users (name, surname, lastname, login, password, role_id, date_registration, dob)
-VALUES ('Алексей','Кузнецов','Петрович','user1','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null );
-insert into users (name, surname, lastname, login, password, role_id, date_registration, dob)
-VALUES ('Григорий','Залесский','Сидорович','user2','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null );
-insert into users (name, surname, lastname, login, password, role_id, date_registration, dob)
-VALUES ('Владелец','Сети','Теле2','tele2','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null );
-insert into users (name, surname, lastname, login, password, role_id, date_registration, dob)
-VALUES ('Билайн','Соперник','Теле2','beeline','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null );
+insert into users (name, surname, lastname, login, password, role_id, date_registration, dob,is_deleted)
+VALUES ('Иван','Потёмкин','Фёдорович','admin','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',1,null ,null,false );
+insert into users (name, surname, lastname, login, password, role_id, date_registration, dob,is_deleted)
+VALUES ('Алексей','Кузнецов','Петрович','user1','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null ,false );
+insert into users (name, surname, lastname, login, password, role_id, date_registration, dob,is_deleted)
+VALUES ('Григорий','Залесский','Сидорович','user2','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null ,false );
+insert into users (name, surname, lastname, login, password, role_id, date_registration, dob,is_deleted)
+VALUES ('Владелец','Сети','Теле2','tele2','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null ,false );
+insert into users (name, surname, lastname, login, password, role_id, date_registration, dob,is_deleted)
+VALUES ('Билайн','Соперник','Теле2','beeline','$2a$10$eTr6KOPUjaqXlzHs2wSwHem5uAPQuD53i0qExxEVNVa/sJzj5LEXu',2,null ,null ,false );
 
 insert into balance (money, number_of_balance,is_lock, user_id) VALUES (1000,'12345678901234567890',false ,1);
 insert into balance (money, number_of_balance,is_lock, user_id) VALUES (100,'12345678901234567891',false ,2);

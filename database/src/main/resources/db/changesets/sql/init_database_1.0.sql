@@ -2,7 +2,7 @@
 
 create table public.role
 (
-	id bigserial not null
+	id integer not null
 		constraint role_pkey
 			primary key,
 	name varchar(100)
@@ -26,6 +26,7 @@ create table public.users
 		constraint users_role_id_fk
 			references role,
 	date_registration timestamp,
+	is_deleted boolean NOT NULL,
 	dob timestamp
 )
 ;
@@ -77,7 +78,7 @@ alter table public.transfer owner to cinimex
 
 create table operation
 (
-	id bigserial not null
+	id integer not null
 		constraint operation_pkey
 			primary key,
 	name varchar(200)
@@ -113,8 +114,6 @@ alter table public.journal owner to cinimex
 ;
 
 
-alter sequence public.role_id_seq owner to cinimex
-;
 
 alter sequence public.users_id_seq owner to cinimex
 ;

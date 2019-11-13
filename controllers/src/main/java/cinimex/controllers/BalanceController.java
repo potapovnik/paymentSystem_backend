@@ -15,19 +15,21 @@ public class BalanceController {
     public boolean lockBalance(@RequestParam Long id) {
         return balanceService.lockBalance(id, true);
     }
+
     @PutMapping("unlock")
     public boolean unlockBalance(@RequestParam Long id) {
         return balanceService.lockBalance(id, false);
     }
 
 
-
     @GetMapping("byId")
     public BalanceDto getBalanceByIdUser(@RequestParam Long idUser) throws Exception {
         return balanceService.getBalanceByIdUser(idUser);
     }
+
     @GetMapping
     public BalanceDto getBalance(@RequestParam Long id) throws Exception {
         return balanceService.getBalance(id);
     }
+
 }

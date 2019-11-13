@@ -27,6 +27,8 @@ public class UsersEntity {
     private Timestamp dob;
     @Column(name = "role_id")
     private Long roleId;
+    @Column(name = "is_deleted")
+    private boolean deleted;
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
     public void setPassword(String password) {
